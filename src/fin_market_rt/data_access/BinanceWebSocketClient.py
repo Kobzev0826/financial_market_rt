@@ -2,7 +2,7 @@ import asyncio
 import json
 from abc import ABC
 
-from src.fin_market_rt.data_access.entites import KLineData
+from fin_market_rt.data_access.entites import KLineData
 import websockets
 
 

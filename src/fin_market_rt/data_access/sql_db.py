@@ -12,9 +12,9 @@ from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 
 from fin_market_rt.helpers.backoff import default_backoff
 
-from src.fin_market_rt.data_access.tables import metadata
-from src.fin_market_rt.settings import Settings
-from src.fin_market_rt.third_party.giveme import register, inject
+from fin_market_rt.data_access.tables import metadata
+from fin_market_rt.settings import Settings
+from fin_market_rt.third_party.giveme import register, inject
 
 
 # https://github.com/python/typing/issues/236#issuecomment-227180301
@@ -111,11 +111,11 @@ class SqlDbService(ServiceMixin):
 @inject
 def sql_db_factory(settings: Settings) -> SqlDbService:
     return SqlDbService(
-        url=settings.sql_db_url_resolved,
-        pool_size=settings.sql_db_pool_size,
-        pool_recycle=settings.sql_db_pool_recycle,
-        query_timeout=settings.sql_db_query_timeout,
-        force_unverified_ssl=settings.sql_db_force_unverified_ssl,
-        healthy_delay=settings.sql_db_healthy_delay,
-        healthcheck_timeout=settings.sql_db_healthcheck_timeout,
+        url=settings.project.sql_db_url_resolved,
+        pool_size=settings.project.sql_db_pool_size,
+        pool_recycle=settings.project.sql_db_pool_recycle,
+        query_timeout=settings.project.sql_db_query_timeout,
+        force_unverified_ssl=settings.project.sql_db_force_unverified_ssl,
+        healthy_delay=settings.project.sql_db_healthy_delay,
+        healthcheck_timeout=settings.project.sql_db_healthcheck_timeout,
     )

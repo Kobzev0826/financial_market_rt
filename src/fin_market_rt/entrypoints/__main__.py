@@ -1,15 +1,20 @@
 import asyncio
 from contextlib import suppress
 
-from src.fin_market_rt.data_access.BinanceWebSocketClient import BinanceWebSocketProvider
-from src.fin_market_rt.data_access.db_storage_service import DBStorage
-from src.fin_market_rt.services.stock_data_ingestion_service import KLineDataManager
-from src.fin_market_rt.settings import Settings
+from fin_market_rt.data_access.BinanceWebSocketClient import BinanceWebSocketProvider
+from fin_market_rt.data_access.db_storage_service import DBStorage
+from fin_market_rt.services.stock_data_ingestion_service import KLineDataManager
+from fin_market_rt.settings import Settings
+from fin_market_rt.third_party.giveme import inject
 
 
-async def amain() -> None:
-    stock_data_service = KLineDataManager(BinanceWebSocketProvider, DBStorage, Settings)
-    await stock_data_service.manage_data_flow()
+@inject
+async def amain(kline_data_manager: KLineDataManager) -> None:
+    await kline_data_manager.manage_data_flow()
+
+# @inject
+# async def amain( settings : Settings) -> None:
+#     breakpoint()
 
 def main() -> None:
     with suppress(KeyboardInterrupt):
