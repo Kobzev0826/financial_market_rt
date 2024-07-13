@@ -11,6 +11,8 @@ from fin_market_rt.data_access.tables import KLineDataTable
 from fin_market_rt.settings import Settings
 from loguru import logger
 
+from src.fin_market_rt.services.v1.entities import IntervalEnum
+
 Base = declarative_base()
 
 
@@ -28,6 +30,12 @@ class KlineFinancialDataDataAccess(DBStorage, ServiceMixin):
         self.cache_treshold = settings.project.cache_treshold + settings.project.metrics_min_data_size
         self.batch_size = settings.project.cache_treshold
         # asyncio.create_task(self.sql_db.create_tables())
+
+    @property
+    def dependencies(self) -> list[ServiceMixin | list[ServiceMixin]]:
+        return [
+            self.sql_db,
+        ]
 
     async def add_new_kline_data(self, kline_data: KLineData):
         self.cache.update({kline_data.timestamp: kline_data})
@@ -49,11 +57,25 @@ class KlineFinancialDataDataAccess(DBStorage, ServiceMixin):
             'close': data.close,
             'volume': data.volume
         } for data in kline_data])
-        breakpoint()
+
         async with self.sql_db.transaction() as conn:
             await conn.execute(insert_stmt, batch_data)
         logger.info(f"K-Line data saved to database: {kline_data}")
 
+    async def get_k_data(self, k: int) -> list[KLineData]:
+        select_stmt = sa.select(KLineDataTable).limit(k)
+        async with self.sql_db.transaction() as conn:
+            result = await conn.execute(select_stmt)
+            rows = result.fetchall()
+            breakpoint()
+            return [KLineData(**row._mapping) for row in rows]
+
+    async def get_kline(self, interval: IntervalEnum, num: int) -> list[KLineData]:
+
+        # v = list(self.cache.values())
+        # return v[-num:]
+        k_line_data = await self.get_k_data(num)
+        return k_line_data
 
 @register(name="kline_financial_data_access", singleton=True)
 @inject
