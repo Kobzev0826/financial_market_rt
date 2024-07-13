@@ -1,6 +1,7 @@
 import asyncio
 from typing import Type
 
+from fin_market_rt.data_access.entites import KLineData
 from fin_market_rt.data_access.sql_db import SqlDbService
 from loguru import logger
 from fin_market_rt.data_access.BinanceWebSocketClient import StockDataProvider, BinanceWebSocketProvider
@@ -23,9 +24,8 @@ class KLineDataManager(ServiceMixin):
                 kline_data = await self.ws_client.get_k_lines()
                 logger.info(f"K-Line data received: {kline_data}")
 
-                await self.db_manager.save_to_db(kline_data)
+                await self.db_manager.add_new_kline_data(kline_data)
 
-                await asyncio.sleep(60)
             except Exception as e:
                 print(f"An error occurred: {e}")
                 await asyncio.sleep(5)
@@ -35,12 +35,9 @@ class KLineDataManager(ServiceMixin):
 @register(name="kline_data_manager", singleton=True)
 @inject
 def kline_data_manager_factory(
-sql_db: SqlDbService
+kline_financial_data_access: KlineFinancialDataDataAccess
 ) -> KLineDataManager:
-    settings = Settings()
     return KLineDataManager(
         BinanceWebSocketProvider("ETHUSDT", "1m"),
-        KlineFinancialDataDataAccess(
-                    sql_db=sql_db,
-                )
+        kline_financial_data_access
     )

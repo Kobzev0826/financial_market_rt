@@ -63,6 +63,9 @@ class ProjectSettings(BaseSettings):
         url = str(URL(str(sql_db_url)).with_scheme("mysql+aiomysql"))
         return url
 
+    #cashe
+    cache_treshold: int = 3
+    metrics_min_data_size: int = 1
 
     model_config = SettingsConfigDict(
         env_prefix="FMRL_",
