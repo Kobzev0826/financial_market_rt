@@ -1,0 +1,6 @@
+# base
+pydantic
+pydantic-settings
+loguru
+asyncio
+async-timeout

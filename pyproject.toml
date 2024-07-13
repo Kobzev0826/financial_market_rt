@@ -1,0 +1,59 @@
+[project]
+name = "fin_market_rt"
+version = "0.1.0"
+readme = "README.md"
+requires-python = "~=3.11"
+dynamic = ["dependencies"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+dynamic.dependencies.file = ["requirements.txt"]
+packages.find.where = ["src"]
+
+# tools
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+select = ["E", "W", "F", "Q", "UP", "I", "ASYNC"]
+exclude = ["src/fin_market_rt/third_party/**/*.py","tests/conftest.py"]
+src = ["src"]
+output-format = "pylint"
+
+[tool.coverage]
+run.source = ["./src/fin_market_rt"]
+run.omit = [
+    "./src/fin_market_rt/third_party/*",
+    "./src/fin_market_rt/entrypoints/**/*.py",
+    "./src/fin_market_rt/observability/log.py",
+]
+report.show_missing = true
+
+[tool.pytest.ini_options]
+addopts = "-x --durations 10 -p no:anyio --cov"
+testpaths = "tests"
+log_format = "%(asctime)s.%(msecs)03d %(name)-20s %(levelname)-8s %(filename)-15s %(lineno)-4d %(message)s"
+log_date_format = "%H:%M:%S"
+log_level = "DEBUG"
+asyncio_mode = "strict"
+
+[tool.mypy]
+files = "src/fin_market_rt"
+strict = true
+ignore_missing_imports = true
+allow_subclassing_any = true
+allow_untyped_calls = true
+pretty = true
+show_error_codes = true
+implicit_reexport = true
+allow_untyped_decorators = true
+warn_unused_ignores = false
+warn_return_any = false
+namespace_packages = true
+overrides = [{module = "fin_market_rt.third_party.*", ignore_errors = true}]
