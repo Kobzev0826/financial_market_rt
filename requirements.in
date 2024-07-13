@@ -7,3 +7,6 @@ async-timeout
 mysqlclient
 yarl
 aiomysql
+starlette
+fastapi
+hypercorn
